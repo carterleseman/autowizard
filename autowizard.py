@@ -48,27 +48,36 @@ def wait_for_process(process_name, open=True):
         time.sleep(1)
 
 def get_launcher_window():
-    app = Application().connect(title="Wizard101", class_name="#32770", backend="win32")
-    window = app.window(class_name="#32770")
-    return window
+    # Wait for the launcher to open
+    wait_for_process('WizardLauncher.exe')
+    
+    for _ in range(10): # Retry for up to 10 seconds
+        try:
+            app = Application().connect(title="Wizard101", class_name="#32770", backend="win32")
+            return app.window(class_name="#32770")
+        except Exception:
+            time.sleep(1) # Wait before trying again
 
 # Function to get the progress value using ctypes and the HWND (handle of the progress bar)
 def get_progress_value(hwnd):
-    try:
-        progress_value = ctypes.windll.user32.SendMessageW(hwnd, PBM_GETPOS, 0, 0)
+    for _ in range(3): # Retry a few times
+        try:
+            progress_value = ctypes.windll.user32.SendMessageW(hwnd, PBM_GETPOS, 0, 0)
 
-        if progress_value < 0 or progress_value > 100:
-            raise ValueError("Invalid progress value detected.")
-        
-        return progress_value
-    except Exception as e:
-        # Handle any ctypes or message call errors
-        # print(f"Error retrieving progress bar value: {e}")
-        return None
+            if progress_value < 0 or progress_value > 100:
+                raise ValueError("Invalid progress value detected.")
+            
+            return progress_value
+        except Exception:
+            time.sleep(1) # Wait before retrying
+
+    print("Error retrieving progress bar value.")
+    return None # All attempts failed
 
 def wait_for_progress_complete():
     # Connect to the Wizard101 Launcher
     window = get_launcher_window()
+    
     progress_bar = window.child_window(class_name="msctls_progress32", found_index=1)
 
     while True:
@@ -90,20 +99,21 @@ def wait_for_progress_complete():
     return True # Login was successful
 
 def login_account(username, password):
-    # Wait for the launcher to load
-    wait_for_process('WizardBrowser.exe')
-
     if ACCOUNT_LOGGING:
         print(f"Logging in to account: {username}")
 
     # Connect to the Wizard101 launcher
     window = get_launcher_window()
 
-    username_field = window.child_window(class_name="Edit", found_index=0)
-    password_field = window.child_window(class_name="Edit", found_index=1)
+    try:
+        username_field = window.child_window(class_name="Edit", found_index=0)
+        password_field = window.child_window(class_name="Edit", found_index=1)
 
-    username_field.set_edit_text(username)
-    password_field.set_edit_text(password)
+        username_field.set_edit_text(username)
+        password_field.set_edit_text(password)
+    except Exception as e:
+        print(f"Error retrieving credential fields: {e}")
+        return False
 
     login_button = window.child_window(title="Login", class_name="Button")
     login_button.click()
@@ -134,8 +144,8 @@ def launch_launcher(launcher_path, use_steam=False, steam_path=None):
         return False # Launch error
 
 def main(accounts, config):
-    launcher_path = config.get("launcher_path")
-    steam_path = config.get("steam_path")
+    launcher_path = config.get("wizard_exe_path")
+    steam_path = config.get("steam_exe_path")
     enable_account_selection = config.get("enable_account_selection", False)
     enable_steam = config.get("enable_steam", False)
 
@@ -155,7 +165,7 @@ def main(accounts, config):
 
             selected_accounts = [accounts[i] for i in selected_indexes if 0 <= i < len(accounts)] 
         except (ValueError, IndexError):
-            print("Invalid account selction.")
+            print("Invalid account selection.")
             return
 
     # Handle option steam account selection if enabled
@@ -200,8 +210,8 @@ if __name__ == "__main__":
     # Account selection is False to login to all accounts by default
     # Steam feature usage is False by default
     config = {
-        "launcher_path": r"C:\path\to\Wizard101.exe",
-        "steam_path": r"C:\path\to\steam.exe",
+        "wizard_exe_path": r"C:\path\to\Wizard101.exe",
+        "steam_exe_path": r"C:\path\to\steam.exe",
         "enable_account_selection": False,
         "enable_steam": False
     }

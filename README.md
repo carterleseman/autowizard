@@ -43,7 +43,7 @@ accounts = [
 
 Specify the path to the `Wizard101.exe` file:
 ```
-launcher_path = r"C:\path\to\Wizard101.exe"
+wizard_exe_path = r"C:\path\to\Wizard101.exe"
 ```
 
 ### *Optional*: Enable Account Selection 
@@ -68,7 +68,7 @@ In the steam properties for Wizard101, set the launch options to:
 2. **Specify the path to `steam.exe`**:
 Set the path to the Steam executable:
 ```
-"steam_path": r"C:\path\to\steam.exe"
+"steam_path_exe": r"C:\path\to\steam.exe"
 ```
 3. **Enable Steam Integration**:
 Change `"enable_steam"` option from `False` to `True`:
