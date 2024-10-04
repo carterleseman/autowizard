@@ -120,42 +120,65 @@ def login_account(username, password):
 
     return True # Success
 
-def launch_launcher(launcher_path):
+def launch_launcher(launcher_path, use_steam=False, steam_path=None):
+    executable = steam_path if use_steam else launcher_path
+    args = ["-applaunch", "799960"] if use_steam else []
     try:
-        if os.path.exists(launcher_path):
-            subprocess.Popen(launcher_path)
+        if os.path.exists(executable):
+            subprocess.Popen([executable] + args)
+            return True # Successful launch
         else:
-            raise FileNotFoundError(f"Launcher path '{launcher_path}' does not exist.")
-    except Exception as e:
+            raise FileNotFoundError(f"Path '{executable}' does not exist.")
+    except (Exception, FileNotFoundError) as e:
         print(f"Error launching the game: {e}")
+        return False # Launch error
 
-def main(accounts, launcher_path, enable_account_selection=False):
+def main(accounts, config):
+    launcher_path = config.get("launcher_path")
+    steam_path = config.get("steam_path")
+    enable_account_selection = config.get("enable_account_selection", False)
+    enable_steam = config.get("enable_steam", False)
+
     print("Please do not interact with the launcher while the script is running.")
 
-    # Handle optional account selection
+    selected_accounts = accounts # Default to logging in all accounts
+
+    # Handle optional account selection if enabled
     if enable_account_selection:
-        account_selection = input("Enter accounts to login (e.g., 2 4 to log in to accounts 2 and 4): ").split()
-
         try:
-            selected_indexes = [int(index) - 1 for index in account_selection] # Convert to 0-based index
-        except ValueError:
-            print("Invalid input. Please enter valid account numbers.")
-            return
-        
-        selected_accounts = [(accounts[i][0], accounts[i][1]) for i in selected_indexes if 0 <= i < len(accounts)]
+            selected_indexes = [
+                int(i) - 1 for i in input("Enter accounts to log in (e.g., 2 4 to log in to accounts 2 and 4): ").split()
+            ]
 
-        if not selected_accounts:
-            print("No valid accounts selected.")
-            return
-    else:
-        selected_accounts = accounts # Log into all accounts by default
+            if any(i < 0 or i >= len(accounts) for i in selected_indexes):
+                raise IndexError
 
-    for username, password in selected_accounts:
-        # Step 1: Launch the Wizard101 launcher
-        launch_launcher(launcher_path)
+            selected_accounts = [accounts[i] for i in selected_indexes if 0 <= i < len(accounts)] 
+        except (ValueError, IndexError):
+            print("Invalid account selction.")
+            return
+
+    # Handle option steam account selection if enabled
+    steam_account = None
+    if enable_steam:
+        try:
+            steam_account_index = int(input(f"Enter the account number to launch through Steam (1-{len(selected_accounts)}): ")) - 1
+
+            if steam_account_index < 0 or steam_account_index >= len(selected_accounts):
+                raise IndexError
+
+            steam_account = selected_accounts[steam_account_index] if 0 <= steam_account_index < len(selected_accounts) else None
+        except (ValueError, IndexError):
+            print("Invalid input for Steam account selection.")
+            return
+
+    for account in selected_accounts:
+        # Step 1: Launch the Wizard101 launcher or Steam
+        if not launch_launcher(launcher_path, use_steam=(account == steam_account), steam_path=steam_path):
+            return
 
         # Step 2: Input the credentials
-        if not login_account(username, password):
+        if not login_account(*account):
             continue
 
         # Step 3: Wait for the launcher to close
@@ -173,9 +196,14 @@ if __name__ == "__main__":
         ('username4', 'password4')
     ]
 
-    # Path to your Wizard101 launcher executable
-    launcher_path = r"C:\path\to\Wizard101.exe"
+    # Steam path is for Steam feature usage
+    # Account selection is False to login to all accounts by default
+    # Steam feature usage is False by default
+    config = {
+        "launcher_path": r"C:\path\to\Wizard101.exe",
+        "steam_path": r"C:\path\to\steam.exe",
+        "enable_account_selection": False,
+        "enable_steam": False
+    }
 
-    # By default, this is False to log into all accounts
-    # To enable account selection, pass True
-    main(accounts, launcher_path, enable_account_selection=False)
+    main(accounts, config)

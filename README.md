@@ -12,6 +12,7 @@ Learn more about boxing on [Final Bastion](https://finalbastion.com/wizard101-gu
 ## Features
 - **Automated Account Opening**: Open multiple accounts effortlessly.
 - **Account Selection**: Choose which accounts to launch.
+- **Steam Integration**: Track playtime and display your game status on Steam for one selected account.
 
 While autowizard is designed for multiple instances, it can also be used to open a single account.
 
@@ -22,7 +23,7 @@ autowizard uses libraries like `psutil` and `pywinauto` to automate the Wizard10
 
 ## Usage
 1. **Open** `autowizard.py` in a text editor (e.g., Notepad++, VSCode, Notepad).
-2. **Scroll to the bottom of the file** (lines 167-181).
+2. **Scroll to the bottom of the file** (lines 190-209).
 
 These sections must be updated for your setup.
 
@@ -49,8 +50,33 @@ launcher_path = r"C:\path\to\Wizard101.exe"
 
 If you want to select which accounts to open (for example, opening only accounts 1 and 3), change `False` to `True`:
 ```
-main(accounts, launcher_path, enable_account_selection=False)
+"enable_account_selection": True
 ```
+
+### *Optional*: Steam Integration
+
+*Please note that this integration does not allow you to run multiple instances using separate Steam accounts. It is only for tracking playtime or displaying your game status.*
+
+This feature is primarily intended for users who want to track their playtime or let friends know they are playing Wizard101 through Steam, while using the original launcher.
+
+To integrate the original Wizard101 with Steam, follow these steps:
+1. **Set Launcher Options in Steam**:
+In the steam properties for Wizard101, set the launch options to:
+```
+"C:\path\to\Wizard101.exe" %command%
+```
+2. **Specify the path to `steam.exe`**:
+Set the path to the Steam executable:
+```
+"steam_path": r"C:\path\to\steam.exe"
+```
+3. **Enable Steam Integration**:
+Change `"enable_steam"` option from `False` to `True`:
+```
+"enable_steam": True
+```
+
+*Tip*: If you plan to use one account more frequently, it's recommended to select that account.
 
 ## Final Notes
 
