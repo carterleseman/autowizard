@@ -1,25 +1,37 @@
 import os
-import sys
+import json
 import time
 import ctypes
 import warnings
 import subprocess
 
-def install(package):
-    subprocess.check_call([sys.executable, '-m', 'pip', 'install', package])
+def load_config(config_file="config.json"):
+    try:
+        with open(config_file, 'r') as file:
+            return json.load(file)
+    except FileNotFoundError:
+        print(f"Config file '{config_file}' not found. Creating a default config.")
 
-def check_and_install_dependencies():
-    required_packages = ['psutil', 'pywinauto']
+        # Create default config
+        default_config = {
+            "account_logging": True,
+            "progress_logging": True,
+            "accounts": [],
+            "wizard_exe_path": "",
+            "steam_exe_path": "",
+            "enable_account_selection": False,
+            "enable_steam": False
+        }
 
-    for package in required_packages:
-        try:
-            __import__(package)
-        except ImportError:
-            print(f"{package} is not installed. Installing...")
-            install(package)
-            print(f"{package} has been installed.")
+        with open(config_file, 'w') as file:
+            json.dump(default_config, file, indent=4)
 
-check_and_install_dependencies()
+        wait_for_input()
+        return default_config
+    except json.JSONDecodeError:
+        print(f"Error decoding JSON from config file '{config_file}'. Please check the file format.")
+        wait_for_input()
+        return {}
 
 import psutil
 from pywinauto import Application
@@ -28,8 +40,6 @@ from pywinauto import Application
 warnings.filterwarnings("ignore", category=UserWarning, module="pywinauto.application")
 
 PBM_GETPOS = 0x0408  # Message to get the current progress bar position
-ACCOUNT_LOGGING = True
-PROGRESS_LOGGING = True
 
 def is_process_running(process_name):
     for proc in psutil.process_iter(['pid', 'name']):
@@ -46,6 +56,10 @@ def close_process(process_name):
 def wait_for_process(process_name, open=True):
     while (is_process_running(process_name)) != open:
         time.sleep(1)
+
+def wait_for_input():
+    # Prevent program from closing instantly on failure
+    input("Press Enter to exit...")
 
 def get_launcher_window():
     # Wait for the launcher to open
@@ -87,7 +101,7 @@ def wait_for_progress_complete():
             print("Progress retrieval failed. Possibly incorrect credentials.")
             return False # Exit; Login failed
 
-        if PROGRESS_LOGGING:
+        if load_config().get("progress_logging", True):
             print(f"Progress: {progress}%")
 
         # Check if progress bar is complete (100%)
@@ -99,8 +113,8 @@ def wait_for_progress_complete():
     return True # Login was successful
 
 def login_account(username, password):
-    if ACCOUNT_LOGGING:
-        print(f"Logging in to account: {username}")
+    if load_config().get("account_logging", True):
+        print(f"Logging in to account '{username}'")
 
     # Connect to the Wizard101 launcher
     window = get_launcher_window()
@@ -128,6 +142,9 @@ def login_account(username, password):
     play_button = window.child_window(title="PLAY!", class_name="Button")
     play_button.click()
 
+    if load_config().get("account_logging", True):
+        print(f"Successfully logged in to account '{username}'")
+
     return True # Success
 
 def launch_launcher(launcher_path, use_steam=False, steam_path=None):
@@ -141,6 +158,7 @@ def launch_launcher(launcher_path, use_steam=False, steam_path=None):
             raise FileNotFoundError(f"Path '{executable}' does not exist.")
     except (Exception, FileNotFoundError) as e:
         print(f"Error launching the game: {e}")
+        wait_for_input()
         return False # Launch error
 
 def main(accounts, config):
@@ -166,6 +184,7 @@ def main(accounts, config):
             selected_accounts = [accounts[i] for i in selected_indexes if 0 <= i < len(accounts)] 
         except (ValueError, IndexError):
             print("Invalid account selection.")
+            wait_for_input()
             return
 
     # Handle option steam account selection if enabled
@@ -180,6 +199,7 @@ def main(accounts, config):
             steam_account = selected_accounts[steam_account_index] if 0 <= steam_account_index < len(selected_accounts) else None
         except (ValueError, IndexError):
             print("Invalid input for Steam account selection.")
+            wait_for_input()
             return
 
     for account in selected_accounts:
@@ -198,25 +218,12 @@ def main(accounts, config):
         wait_for_process('WizardGraphicalClient.exe')
 
 if __name__ == "__main__":
-    # List of accounts in (username, password) format
-    accounts = [
-        ('username1', 'password1'),
-        ('username2', 'password2'),
-        ('username3', 'password3'),
-        ('username4', 'password4')
-    ]
+    config = load_config()
 
-    # WARNING: Please manage your account credentials securely
-    # Avoid sharing this script with your credentials hardcoded
-
-    # Steam path is for Steam feature usage
-    # Account selection is False to login to all accounts by default
-    # Steam feature usage is False by default
-    config = {
-        "wizard_exe_path": r"C:\path\to\Wizard101.exe",
-        "steam_exe_path": r"C:\path\to\steam.exe",
-        "enable_account_selection": False,
-        "enable_steam": False
-    }
+    accounts = config.get("accounts", [])
+    wizard_exe_path = config.get("wizard_exe_path")
+    steam_exe_path = config.get("steam_exe_path")
+    enable_account_selection = config.get("enable_account_selection", False)
+    enable_steam = config.get("enable_steam", False)
 
     main(accounts, config)

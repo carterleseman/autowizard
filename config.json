@@ -1,0 +1,17 @@
+{
+    "account_logging": true,
+    "progress_logging": true,
+
+    "accounts": [
+        ["username1", "password1"],
+        ["username2", "password2"],
+        ["username3", "password3"],
+        ["username4", "password4"]
+    ],
+
+    "wizard_exe_path": "C:\\path\\to\\Wizard101.exe",
+    "steam_exe_path": "C:\\path\\to\\steam.exe",
+
+    "enable_account_selection": false,
+    "enable_steam": false
+}
