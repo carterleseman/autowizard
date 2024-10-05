@@ -23,7 +23,7 @@ autowizard uses libraries like `psutil` and `pywinauto` to automate the Wizard10
 
 ## Usage
 1. **Open** `autowizard.py` in a text editor (e.g., Notepad++, VSCode, Notepad).
-2. **Scroll to the bottom of the file** (lines 200-219).
+2. **Scroll to the bottom of the file** (lines 202-220).
 
 These sections must be updated for your setup.
 
@@ -81,3 +81,7 @@ Change `"enable_steam"` option from `False` to `True`:
 ## Final Notes
 
 Make sure to save your changes before running the script. Enjoy your automated Wizard101 experience!
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
