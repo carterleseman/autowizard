@@ -23,7 +23,7 @@ autowizard uses libraries like `psutil` and `pywinauto` to automate the Wizard10
 
 ## Usage
 1. **Open** `autowizard.py` in a text editor (e.g., Notepad++, VSCode, Notepad).
-2. **Scroll to the bottom of the file** (lines 190-209).
+2. **Scroll to the bottom of the file** (lines 200-219).
 
 These sections must be updated for your setup.
 

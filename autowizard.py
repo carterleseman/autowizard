@@ -77,7 +77,7 @@ def get_progress_value(hwnd):
 def wait_for_progress_complete():
     # Connect to the Wizard101 Launcher
     window = get_launcher_window()
-    
+
     progress_bar = window.child_window(class_name="msctls_progress32", found_index=1)
 
     while True:
@@ -205,6 +205,9 @@ if __name__ == "__main__":
         ('username3', 'password3'),
         ('username4', 'password4')
     ]
+
+    # WARNING: Please manage your account credentials securely
+    # Avoid sharing this script with your credentials hardcoded
 
     # Steam path is for Steam feature usage
     # Account selection is False to login to all accounts by default
