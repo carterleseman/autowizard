@@ -83,11 +83,10 @@ Change `"enable_steam"` option from `false` to `true`:
 
 ### *Optional*: Disable Logging
 
-By default, logging for the account that is currently being logged in and progress bar percentage is enabled.
+By default, logging for the progress bar percentage is enabled.
 
 You can turn logging off by changing `true` to `false`:
 ```json
-"account_logging": false
 "progress_logging": false
 ```
 
@@ -100,7 +99,7 @@ You can turn logging off by changing `true` to `false`:
 Enjoy your automated Wizard101 experience!
 
 <!-- Compiledd using pyinstaller:
-pyinstaller --onefile --clean --noupx --hidden-import=comtypes.stream autowizard.py -->
+pyinstaller --onefile --clean --noupx --hidden-import=comtypes.stream --version-file=version_info.txt autowizard.py -->
 
 ## License
 

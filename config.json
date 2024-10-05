@@ -1,5 +1,5 @@
 {
-    "account_logging": true,
+    "config_version": "1.1.1",
     "progress_logging": true,
 
     "accounts": [

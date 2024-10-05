@@ -32,6 +32,10 @@ def load_config(config_file="config.json"):
         print(f"Error decoding JSON from config file '{config_file}'. Please check the file format.")
         wait_for_input()
         return {}
+    except Exception as e:
+        print(f"An unexpected error occured while loading the config: {e}")
+        wait_for_input()
+        return {}
 
 import psutil
 from pywinauto import Application
@@ -88,7 +92,7 @@ def get_progress_value(hwnd):
     print("Error retrieving progress bar value.")
     return None # All attempts failed
 
-def wait_for_progress_complete():
+def wait_for_progress_complete(config):
     # Connect to the Wizard101 Launcher
     window = get_launcher_window()
 
@@ -101,7 +105,7 @@ def wait_for_progress_complete():
             print("Progress retrieval failed. Possibly incorrect credentials.")
             return False # Exit; Login failed
 
-        if load_config().get("progress_logging", True):
+        if config.get("progress_logging", True):
             print(f"Progress: {progress}%")
 
         # Check if progress bar is complete (100%)
@@ -112,9 +116,53 @@ def wait_for_progress_complete():
     
     return True # Login was successful
 
-def login_account(username, password):
-    if load_config().get("account_logging", True):
-        print(f"Logging in to account '{username}'")
+def select_accounts(accounts):
+    print("Available accounts:")
+    for idx, account in enumerate(accounts, 1):
+        print(f"{idx}: {account[0]}")
+
+    try:
+        selected_indexes = [
+            int(i) - 1 for i in input("Enter account numbers to log in (e.g., 1 2 3): ").split()
+        ]
+
+        # Validate
+        if any(i < 0 or i >= len(accounts) for i in selected_indexes):
+            raise IndexError
+        
+        return [accounts[i] for i in selected_indexes]
+    except (ValueError, IndexError):
+        print("Invalid account selection(s).")
+        wait_for_input()
+        return None # Invalid selection(s)
+    
+def select_steam_account(selected_accounts):
+    print("Available accounts:")
+    for idx, account in enumerate(selected_accounts, 1):
+        print(f"{idx}: {account[0]}")
+
+    print("Enter 'skip' to bypass Steam login.")
+
+    try:
+        user_input = input(f"Enter the account number to launch through Steam or 'skip': ").strip().lower()
+
+        if user_input == 'skip' or user_input == '':
+            print("Skipping Steam login.")
+            return None # Skip Steam login
+        
+        steam_account_index = int(user_input) - 1
+
+        if steam_account_index < 0 or steam_account_index >= len(selected_accounts):
+            raise IndexError
+    
+        return selected_accounts[steam_account_index]
+    except (ValueError, IndexError):
+        print("Invalid input for Steam account selection")
+        wait_for_input()
+        return None # Invalid selection
+    
+def login_account(username, password, config):
+    print(f"Logging in to account '{username}'")
 
     # Connect to the Wizard101 launcher
     window = get_launcher_window()
@@ -132,8 +180,8 @@ def login_account(username, password):
     login_button = window.child_window(title="Login", class_name="Button")
     login_button.click()
 
-    if not wait_for_progress_complete():
-        print(f"Login failed for account: {username}. Skipping to the next account.")
+    if not wait_for_progress_complete(config):
+        print(f"Login failed for account '{username}'. Skipping to the next account.")
         close_process('WizardLauncher.exe')
         # Wait a bit after closing launcher to prevent errors
         wait_for_process('WizardLauncher.exe', False)
@@ -142,8 +190,7 @@ def login_account(username, password):
     play_button = window.child_window(title="PLAY!", class_name="Button")
     play_button.click()
 
-    if load_config().get("account_logging", True):
-        print(f"Successfully logged in to account '{username}'")
+    print(f"Successfully logged in to account '{username}'")
 
     return True # Success
 
@@ -169,38 +216,19 @@ def main(accounts, config):
 
     print("Please do not interact with the launcher while the script is running.")
 
-    selected_accounts = accounts # Default to logging in all accounts
+    selected_accounts = accounts
 
     # Handle optional account selection if enabled
     if enable_account_selection:
-        try:
-            selected_indexes = [
-                int(i) - 1 for i in input("Enter accounts to log in (e.g., 2 4 to log in to accounts 2 and 4): ").split()
-            ]
+        selected_accounts = select_accounts(accounts)
+        if selected_accounts is None:
+            return  
 
-            if any(i < 0 or i >= len(accounts) for i in selected_indexes):
-                raise IndexError
-
-            selected_accounts = [accounts[i] for i in selected_indexes if 0 <= i < len(accounts)] 
-        except (ValueError, IndexError):
-            print("Invalid account selection.")
-            wait_for_input()
-            return
+    steam_account = None
 
     # Handle option steam account selection if enabled
-    steam_account = None
     if enable_steam:
-        try:
-            steam_account_index = int(input(f"Enter the account number to launch through Steam (1-{len(selected_accounts)}): ")) - 1
-
-            if steam_account_index < 0 or steam_account_index >= len(selected_accounts):
-                raise IndexError
-
-            steam_account = selected_accounts[steam_account_index] if 0 <= steam_account_index < len(selected_accounts) else None
-        except (ValueError, IndexError):
-            print("Invalid input for Steam account selection.")
-            wait_for_input()
-            return
+        steam_account = select_steam_account(selected_accounts)
 
     for account in selected_accounts:
         # Step 1: Launch the Wizard101 launcher or Steam
@@ -208,7 +236,7 @@ def main(accounts, config):
             return
 
         # Step 2: Input the credentials
-        if not login_account(*account):
+        if not login_account(*account, config):
             continue
 
         # Step 3: Wait for the launcher to close
@@ -221,9 +249,5 @@ if __name__ == "__main__":
     config = load_config()
 
     accounts = config.get("accounts", [])
-    wizard_exe_path = config.get("wizard_exe_path")
-    steam_exe_path = config.get("steam_exe_path")
-    enable_account_selection = config.get("enable_account_selection", False)
-    enable_steam = config.get("enable_steam", False)
 
     main(accounts, config)
