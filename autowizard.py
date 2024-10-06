@@ -14,11 +14,13 @@ def load_config(config_file="config.json"):
 
         # Create default config
         default_config = {
-            "account_logging": True,
             "progress_logging": True,
-            "accounts": [],
-            "wizard_exe_path": "",
-            "steam_exe_path": "",
+            "accounts": [
+                ["username1", "password1"],
+                ["username2", "password2"]
+            ],
+            "wizard_exe_path": "C:\\path\\to\\Wizard101.exe",
+            "steam_exe_path": "C:\\path\\to\\steam.exe",
             "enable_account_selection": False,
             "enable_steam": False
         }

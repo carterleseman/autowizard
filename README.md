@@ -99,7 +99,7 @@ You can turn logging off by changing `true` to `false`:
 Enjoy your automated Wizard101 experience!
 
 <!-- Compiledd using pyinstaller:
-pyinstaller --onefile --clean --noupx --hidden-import=comtypes.stream --version-file=version_info.txt autowizard.py -->
+pyinstaller --onefile --clean --noupx --hidden-import=comtypes.stream --version-file=version_info.txt --icon=autowizard.ico autowizard.py -->
 
 ## License
 
