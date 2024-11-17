@@ -10,26 +10,9 @@ def load_config(config_file="config.json"):
         with open(config_file, 'r') as file:
             return json.load(file)
     except FileNotFoundError:
-        print(f"Config file '{config_file}' not found. Creating a default config.")
-
-        # Create default config
-        default_config = {
-            "progress_logging": True,
-            "accounts": [
-                ["username1", "password1"],
-                ["username2", "password2"]
-            ],
-            "wizard_exe_path": "C:\\path\\to\\Wizard101.exe",
-            "steam_exe_path": "C:\\path\\to\\steam.exe",
-            "enable_account_selection": False,
-            "enable_steam": False
-        }
-
-        with open(config_file, 'w') as file:
-            json.dump(default_config, file, indent=4)
-
+        print(f"Config file '{config_file}' not found.")
         wait_for_input()
-        return default_config
+        return {}
     except json.JSONDecodeError:
         print(f"Error decoding JSON from config file '{config_file}'. Please check the file format.")
         wait_for_input()
@@ -40,12 +23,15 @@ def load_config(config_file="config.json"):
         return {}
 
 import psutil
+import win32gui
+import pygetwindow
 from pywinauto import Application
 
 # Suppress 32-bit application automated using 64-bit Python warning
 warnings.filterwarnings("ignore", category=UserWarning, module="pywinauto.application")
 
 PBM_GETPOS = 0x0408  # Message to get the current progress bar position
+SPI_GETWORKAREA = 0x0030
 
 def is_process_running(process_name):
     for proc in psutil.process_iter(['pid', 'name']):
@@ -66,6 +52,23 @@ def wait_for_process(process_name, open=True):
 def wait_for_input():
     # Prevent program from closing instantly on failure
     input("Press Enter to exit...")
+
+def get_screen_resolution():
+    screen_width = ctypes.windll.user32.GetSystemMetrics(0)
+    screen_height = ctypes.windll.user32.GetSystemMetrics(1)
+    return screen_width, screen_height
+
+def get_taskbar_height():
+    desktop = ctypes.wintypes.RECT()
+
+    ctypes.windll.user32.SystemParametersInfoW(SPI_GETWORKAREA, 0, ctypes.byref(desktop), 0)
+
+    _, screen_height = get_screen_resolution()
+
+    # Taskbar height is the difference between screen height and the working area bottom
+    taskbar_height = screen_height - desktop.bottom
+
+    return taskbar_height
 
 def get_launcher_window():
     # Wait for the launcher to open
@@ -209,12 +212,37 @@ def launch_launcher(launcher_path, use_steam=False, steam_path=None):
         print(f"Error launching the game: {e}")
         wait_for_input()
         return False # Launch error
+    
+def position_game_window(window_positions, username, index):
+    positions = window_positions[index % len(window_positions)]
+
+    screen_width, screen_height = get_screen_resolution()
+    taskbar_height = get_taskbar_height()
+
+    window = pygetwindow.getWindowsWithTitle("Wizard101")[0]
+
+    window_width = window.width
+    window_height = window.height
+
+    x, y = positions
+    if x == screen_width:
+        x -= window_width
+    if y == screen_height:
+        y -= (window_height + taskbar_height)
+
+    print(f"Moving window for account '{username}' to position ({x}, {y})")
+    win32gui.MoveWindow(window._hWnd, x, y, window_width, window_height, True)
+
+    # print(f"Renaming window for account '{username}'")
+    win32gui.SetWindowText(window._hWnd, username)
 
 def main(accounts, config):
     launcher_path = config.get("wizard_exe_path")
     steam_path = config.get("steam_exe_path")
     enable_account_selection = config.get("enable_account_selection", False)
     enable_steam = config.get("enable_steam", False)
+    enable_window_positioning = config.get("enable_window_positioning", True)
+    window_positions = config.get("window_positions", [(0, 0)])
 
     print("Please do not interact with the launcher while the script is running.")
 
@@ -232,7 +260,7 @@ def main(accounts, config):
     if enable_steam:
         steam_account = select_steam_account(selected_accounts)
 
-    for account in selected_accounts:
+    for idx, account in enumerate(selected_accounts):
         # Step 1: Launch the Wizard101 launcher or Steam
         if not launch_launcher(launcher_path, use_steam=(account == steam_account), steam_path=steam_path):
             return
@@ -246,6 +274,10 @@ def main(accounts, config):
 
         # Step 4: Wait until the game client is running
         wait_for_process('WizardGraphicalClient.exe')
+
+        # Step 5: Position game window if enabled
+        if enable_window_positioning:
+            position_game_window(window_positions, account[0], idx)
 
 if __name__ == "__main__":
     config = load_config()

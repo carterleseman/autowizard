@@ -90,6 +90,29 @@ You can turn logging off by changing `true` to `false`:
 "progress_logging": false
 ```
 
+### *Optional*: Window Positioning
+
+This feature allows you to control where each window opens on your screen.
+
+By default, window positioning is enabled. You can specify multiple positions for the windows, and each account will open in the corresponding spot on your screen.
+
+You can set up the `window_positions` config to define where each game window will be placed. Positions are specified as [x, y] coordinates relative to your screen's top left corner.
+```json
+"window_positions": [
+    [0, 0], // Top-left corner
+    [1920, 0], // Top-right corner
+    [0, 1080], // Bottom-left corner
+    [1920, 1080] // Bottom-right corner
+]
+```
+
+I've included coordinates based on a 1920x1080 screen resolution. Change these coordinates to fit your own.
+
+If you have more accounts than positions, the process will cycle back through the positions.
+ - You have 1 account and 4 specified positions. It will use the first position.
+ - You have 4 accounts and 2 specified positions. It will use the 2 positions and then cycle back through for the last 2 accounts.
+ - You have 4 accounts and 0 specified positions. All accounts will use [0, 0].
+
 ## Final Notes
 
 - **Save Changes**: Ensure that you save your changes to `config.json` before running the script.
