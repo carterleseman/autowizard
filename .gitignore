@@ -6,3 +6,6 @@
 
 # Virtual environment
 /venv/
+
+# autofarmer temporary file
+tmp*
