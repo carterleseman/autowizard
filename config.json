@@ -1,5 +1,5 @@
 {
-    "config_version": "1.3.0",
+    "config_version": "1.3.1",
     "progress_logging": true,
 
     "accounts": [
@@ -28,8 +28,8 @@
     "spell_priority": {
         "sun": ["epic", "colossal", "gargantuan", "monstrous"],
         "star": ["frenzy", "berserk", "furnace"],
-        "storm": ["sound_of_musicology", "bunyips_rage", "squall_wyvern", "tempest", "storm_lord"],
-        "ice": ["snowball_barrage", "blizzard", "frost_giant", "reindeer_knight"],
+        "storm": ["bunyips_rage", "squall_wyvern", "tempest", "storm_lord"],
+        "ice": ["blizzard", "frost_giant", "reindeer_knight"],
         "fire": ["phantasmania", "meteor_strike", "fire_dragon"],
         "life": ["zand_the_bandit", "ratatoskrs_spin", "forest_lord"],
         "death": ["call_of_khrulhu", "snack_attack", "wobbegong_frenzy", "ship_of_fools", "scarecrow", "deer_knight"],

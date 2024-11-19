@@ -13,8 +13,10 @@ Learn more about boxing on [Final Bastion](https://finalbastion.com/wizard101-gu
 - **Automated Account Opening**: Open multiple accounts effortlessly.
 - **Account Selection**: Choose which accounts to launch.
 - **Steam Integration**: Track playtime and display your game status on Steam for one selected account.
+- **Window Positioning**: Automatically position windows based on screen coordinates.
 
-While autowizard is designed for multiple instances, it can also be used to open a single account.
+> [!NOTE]
+> While autowizard is designed for multiple instances, it can also be used to open a single account.
 
 ## Usage
 1. **Ensure** `config.json` **exists** in the same directory/folder as `autowizard.exe`.
@@ -55,7 +57,7 @@ If you want to select which accounts to open (for example, opening only accounts
 ### *Optional*: Steam Integration
 
 > [!NOTE]
-> This integration does not allow you to run multiple instances using separate Steam accounts. It is only for tracking playtime or displaying your game status.
+> This integration is for a single account only. It does not support running multiple instances using different Steam accounts.
 
 This feature is primarily intended for users who want to track their playtime or let friends know they are playing Wizard101 through Steam, while using the original launcher.
 
@@ -126,12 +128,16 @@ autofarmer is best suited for simplifying repetitive mob fights, where battles r
 ## Features
 - **Customizable Spell Priorities**: Tailor the spell list to match your character's deck.
 - **Dynamic Spell Selection**: Skips to the next spell if a higher-priority one isn't available.
+- **Enchantment & Aura Selection**: Use of buffs to enhance your character's damage output.
 
 ## Usage
 1. **Ensure** `config.json` **exists** in the same directory/folder as `autofarmer.exe`.
 2. **Open** `config.json` in a text editor (e.g., Notepad++, VSCode, Notepad) and make the [needed](#1-wizard101-window-title) changes.
 3. **Ensure** Wizard101 is running.
 3. **Run** `autofarmer.exe`.
+
+> [!TIP]
+> autofarmer works best on higher resolutions. For the absolutely best results, put your game on borderless.
 
 ### 1. Wizard101 Window Title
 
@@ -157,13 +163,14 @@ Ensure your school is correctly set:
 
 This ensures autofarmer looks for spells relevant to your character.
 
-Spell priorities should reflect your deck setup. Place the most frequently used or important spells at the start of the list. autofarmer reads priorities from left (highest priority) to right (lowest priority).
+Spell priorities should reflect your deck setup. Place the most frequently used or important spells at the start of the list. autofarmer reads priorities from left (highest priority) to right (lowest priority). If there are spells you are not going to use, remove them altogether for quicker results.
 
 Example configuration:
 ```json
 "spell_priority": {
     "sun": ["epic"],
-    "storm": ["sound_of_musicology", "bunyips_rage", "tempest"]
+    "star": [],
+    "storm": ["bunyips_rage", "tempest"]
 }
 ```
 
@@ -175,14 +182,13 @@ If a spell isn't found during battle, autofarmer automatically skips to the next
 - **Active Use Only**: The game must remain the active window. autofarmer cannot function in the background.
 - **Simple Battles Only**: autofarmer is designed for basic mob farming, not complex boss fights or PvP scenarios.
 
-## Final Notes
+# Final Notes
 
-- **Save Changes**: Ensure that you save your changes to `config.json` before running the script.
-- **Check Paths**: Double-check that the paths to `Wizard101.exe` and `steam.exe` are correct.
-- It's important that the path to `Wizard101.exe` is to the real one and not a shortcut.
+- **Save Changes**: Make sure to save your changes to `config.json` before running the program.
+- **Check Paths**: Double-check that the paths to `Wizard101.exe` and `steam.exe` are correct. They should point to the actual executable files, not shortcuts.
 
 > [!CAUTION]
-> Securely store your `config.json` since it contains your sensitive login credentials. Do not share your config with other users, as you risk leaking your credentials!
+> Treat your `config.json` file like sensitive information. Don't share it with others to avoid risking your login credentials.
 
 Enjoy your automated Wizard101 experience!
 
@@ -192,6 +198,6 @@ pyinstaller --onefile --clean --noupx --hidden-import=comtypes.stream --version-
 <!-- Compiled using pyinstaller:
 pyinstaller --onefile --clean --noupx --hidden-import=comtypes.stream --version-file=autofarmer_version.txt --icon=autofarmer.ico autofarmer.py -->
 
-## License
+# License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

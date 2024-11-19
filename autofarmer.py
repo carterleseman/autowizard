@@ -5,6 +5,7 @@ import time
 import numpy
 import pyautogui
 import pygetwindow
+import pydirectinput
 
 def cleanup():
     tmp_file = "tmp_resized.png"
@@ -42,21 +43,31 @@ def get_game_window(title="Wizard101"):
 
 def activate_window(window_title):
     window = get_game_window(window_title)
-    pyautogui.press('altleft')
+    pydirectinput.press('altleft')
     window.activate()
     time.sleep(0.5)
 
 def move_cursor(location):
-    pyautogui.moveTo(location)
+    try:
+        x, y = location
+        # Absolute mouse movement
+        pydirectinput.moveTo(x, y)
+    except TypeError:
+        return
 
-def clear_cursor(offset_x=0, offset_y=200):
-    pyautogui.move(offset_x, offset_y)
+def clear_cursor(offset_x=None, offset_y=200):
+    # Relative mouse movement
+    pydirectinput.move(offset_x, offset_y)
 
 def click(clicks=1, interval=1):
-    pyautogui.mouseDown()
-    pyautogui.click(clicks=clicks, interval=interval)
-    time.sleep(0.5)
-    pyautogui.mouseUp()
+    pydirectinput.click(clicks=clicks, interval=interval)
+
+def spin():
+    pydirectinput.keyUp('d')
+    pydirectinput.keyDown('d')
+
+def exit_spin():
+    pydirectinput.keyUp('d')
 
 def resize_image(image_path, scale_factor):
     img = cv2.imread(image_path)
@@ -106,11 +117,14 @@ def locate_image_with_scaling(img_path, img, screen_region, min_scale=0.5, max_s
     return None
 
 def formulate_center(location):
-    center_x = location.left + location.width // 2
-    center_y = location.top + location.height // 2
+    try:
+        center_x = location.left + location.width // 2
+        center_y = location.top + location.height // 2
 
-    center_location = (center_x, center_y)
-    return center_location
+        center_location = (center_x, center_y)
+        return center_location
+    except AttributeError: 
+        return None
 
 def screenshot(window_title):
     window = get_game_window(window_title)
@@ -240,13 +254,14 @@ def main(config):
             # Step 1: Detect if player is in combat
             if detect_combat(window_title):
                 print("In combat!")
+                exit_spin()
                 
                 # Step 2: Search for aura
                 if use_aura(window_title, aura_priority):
                     # If aura used, start the loop over
                     continue
 
-                # Step 3: Search for enchant
+                # Step 3: Search for enchantd
                 enchant_found = enchant_available(window_title, enchant_priority)
 
                 # Step 4: Apply enchant (if found) and play card
@@ -256,6 +271,7 @@ def main(config):
                 time.sleep(1)
             else:
                 print("Waiting for combat...")
+                spin()
                 time.sleep(3)  # Wait before checking again
     except KeyboardInterrupt:
         print("Program interrupted. Cleaning up and quitting...")
