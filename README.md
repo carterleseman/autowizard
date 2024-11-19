@@ -16,17 +16,13 @@ Learn more about boxing on [Final Bastion](https://finalbastion.com/wizard101-gu
 
 While autowizard is designed for multiple instances, it can also be used to open a single account.
 
-<!-- ## Requirements
-- **Python**: Make sure Python is installed on your system. You can download it from [Python.org](https://www.python.org/).
-
-autowizard uses libraries like `psutil` and `pywinauto` to automate the Wizard101 launcher's GUI. Non-standard libraries will be automatically installed on the first run using `pip`. -->
-
 ## Usage
 1. **Ensure** `config.json` **exists** in the same directory/folder as `autowizard.exe`.
 2. **Open** `config.json` in a text editor (e.g., Notepad++, VSCode, Notepad) and make the [needed](#1-adding-your-accounts) changes.
 3. **Run** `autowizard.exe`.
 
-These sections must be updated for your setup.
+> [!IMPORTANT]
+> The following sections must be updated for your setup.
 
 ### 1. Adding Your Accounts
 
@@ -58,7 +54,8 @@ If you want to select which accounts to open (for example, opening only accounts
 
 ### *Optional*: Steam Integration
 
-*Please note that this integration does not allow you to run multiple instances using separate Steam accounts. It is only for tracking playtime or displaying your game status.*
+> [!NOTE]
+> This integration does not allow you to run multiple instances using separate Steam accounts. It is only for tracking playtime or displaying your game status.
 
 This feature is primarily intended for users who want to track their playtime or let friends know they are playing Wizard101 through Steam, while using the original launcher.
 
@@ -79,7 +76,8 @@ Change `"enable_steam"` option from `false` to `true`:
 "enable_steam": true
 ```
 
-*Tip*: If you plan to use one account more frequently, it's recommended to select that account.
+> [!TIP]
+> If you plan to use one account more frequently, it's recommended to select that account.
 
 ### *Optional*: Disable Logging
 
@@ -99,10 +97,10 @@ By default, window positioning is enabled. You can specify multiple positions fo
 You can set up the `window_positions` config to define where each game window will be placed. Positions are specified as [x, y] coordinates relative to your screen's top left corner.
 ```json
 "window_positions": [
-    [0, 0], // Top-left corner
-    [1920, 0], // Top-right corner
-    [0, 1080], // Bottom-left corner
-    [1920, 1080] // Bottom-right corner
+    [0, 0],
+    [1920, 0],
+    [0, 1080],
+    [1920, 1080]
 ]
 ```
 
@@ -113,16 +111,86 @@ If you have more accounts than positions, the process will cycle back through th
  - You have 4 accounts and 2 specified positions. It will use the 2 positions and then cycle back through for the last 2 accounts.
  - You have 4 accounts and 0 specified positions. All accounts will use [0, 0].
 
+# autofarmer
+
+An automated application designed to assist players with farming in Wizard101 using image recognition.
+
+## Use Cases
+*Farming* in autofarmer's case refers to repeatedly engaging in battles to collect gold, reagents, seeds (like couch potatoes), or other valuable drops in Wizard101.
+
+autofarmer is best suited for simplifying repetitive mob fights, where battles require minimal strategy and can be automated effectively. It's ideal for running the tool overnight or while you're away.
+
+> [!NOTE]  
+> autofarmer is an active process and cannot run in the background. The game must remain open and active during use.
+
+## Features
+- **Customizable Spell Priorities**: Tailor the spell list to match your character's deck.
+- **Dynamic Spell Selection**: Skips to the next spell if a higher-priority one isn't available.
+
+## Usage
+1. **Ensure** `config.json` **exists** in the same directory/folder as `autofarmer.exe`.
+2. **Open** `config.json` in a text editor (e.g., Notepad++, VSCode, Notepad) and make the [needed](#1-wizard101-window-title) changes.
+3. **Ensure** Wizard101 is running.
+3. **Run** `autofarmer.exe`.
+
+### 1. Wizard101 Window Title
+
+By default, autofarmer targets the active game window titled **"Wizard101"**. However, if **window positioning** is enabled, you must set `window_title` to match the username of the account logged in and farming.
+
+Example Configuration:
+```json
+"accounts": [
+    ["username1", "password1"]
+],
+"enable_window_positioning": true,
+"window_title": "username1"
+```
+
+This ensures autofarmer correctly identifies the game window when positioning is enabled.
+
+### 2. School and Spell Priorities
+
+Ensure your school is correctly set:
+```json
+"school": "storm"
+```
+
+This ensures autofarmer looks for spells relevant to your character.
+
+Spell priorities should reflect your deck setup. Place the most frequently used or important spells at the start of the list. autofarmer reads priorities from left (highest priority) to right (lowest priority).
+
+Example configuration:
+```json
+"spell_priority": {
+    "sun": ["epic"],
+    "storm": ["sound_of_musicology", "bunyips_rage", "tempest"]
+}
+```
+
+If a spell isn't found during battle, autofarmer automatically skips to the next one.
+
+## Possible Misconceptions
+
+- **Single Account/Instance**: autofarmer does not support multiple instances.
+- **Active Use Only**: The game must remain the active window. autofarmer cannot function in the background.
+- **Simple Battles Only**: autofarmer is designed for basic mob farming, not complex boss fights or PvP scenarios.
+
 ## Final Notes
 
 - **Save Changes**: Ensure that you save your changes to `config.json` before running the script.
 - **Check Paths**: Double-check that the paths to `Wizard101.exe` and `steam.exe` are correct.
 - It's important that the path to `Wizard101.exe` is to the real one and not a shortcut.
 
+> [!CAUTION]
+> Securely store your `config.json` since it contains your sensitive login credentials. Do not share your config with other users, as you risk leaking your credentials!
+
 Enjoy your automated Wizard101 experience!
 
-<!-- Compiledd using pyinstaller:
-pyinstaller --onefile --clean --noupx --hidden-import=comtypes.stream --version-file=version_info.txt --icon=autowizard.ico autowizard.py -->
+<!-- Compiled using pyinstaller:
+pyinstaller --onefile --clean --noupx --hidden-import=comtypes.stream --version-file=autowizard_version.txt --icon=autowizard.ico autowizard.py -->
+
+<!-- Compiled using pyinstaller:
+pyinstaller --onefile --clean --noupx --hidden-import=comtypes.stream --version-file=autofarmer_version.txt --icon=autofarmer.ico autofarmer.py -->
 
 ## License
 

@@ -27,7 +27,8 @@
     "school": "storm",
     "spell_priority": {
         "sun": ["epic", "colossal", "gargantuan", "monstrous"],
-        "storm": ["glowbug_squall", "sound_of_musicology", "bunyips_rage", "tempest", "storm_lord"],
+        "star": ["frenzy", "berserk", "furnace"],
+        "storm": ["sound_of_musicology", "bunyips_rage", "squall_wyvern", "tempest", "storm_lord"],
         "ice": ["snowball_barrage", "blizzard", "frost_giant", "reindeer_knight"],
         "fire": ["phantasmania", "meteor_strike", "fire_dragon"],
         "life": ["zand_the_bandit", "ratatoskrs_spin", "forest_lord"],
