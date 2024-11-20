@@ -81,20 +81,20 @@ Change `"enable_steam"` option from `false` to `true`:
 > [!TIP]
 > If you plan to use one account more frequently, it's recommended to select that account.
 
-### *Optional*: Disable Logging
+### *Optional*: Progress Logging
 
-By default, logging for the progress bar percentage is enabled.
+By default, logging for the progress bar percentage is disabled.
 
-You can turn logging off by changing `true` to `false`:
+You can turn logging on by changing `false` to `true`:
 ```json
-"progress_logging": false
+"progress_logging": true
 ```
 
 ### *Optional*: Window Positioning
 
 This feature allows you to control where each window opens on your screen.
 
-By default, window positioning is enabled. You can specify multiple positions for the windows, and each account will open in the corresponding spot on your screen.
+By default, window positioning is disabled. You can specify multiple positions for the windows, and each account will open in the corresponding spot on your screen.
 
 You can set up the `window_positions` config to define where each game window will be placed. Positions are specified as [x, y] coordinates relative to your screen's top left corner.
 ```json
@@ -137,7 +137,7 @@ autofarmer is best suited for simplifying repetitive mob fights, where battles r
 3. **Run** `autofarmer.exe`.
 
 > [!TIP]
-> autofarmer works best on higher resolutions. For the absolutely best results, put your game on borderless.
+> autofarmer works best on higher resolutions. For the absolutely best results, put your game on borderless and change the UI size to regular.
 
 ### 1. Wizard101 Window Title
 
@@ -196,7 +196,7 @@ Enjoy your automated Wizard101 experience!
 pyinstaller --onefile --clean --noupx --hidden-import=comtypes.stream --version-file=autowizard_version.txt --icon=autowizard.ico autowizard.py -->
 
 <!-- Compiled using pyinstaller:
-pyinstaller --onefile --clean --noupx --hidden-import=comtypes.stream --version-file=autofarmer_version.txt --icon=autofarmer.ico autofarmer.py -->
+pyinstaller --onefile --clean --noupx --hidden-import=pydirectinput --version-file=autofarmer_version.txt --icon=autofarmer.ico autofarmer.py -->
 
 # License
 

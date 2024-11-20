@@ -1,6 +1,6 @@
 {
-    "config_version": "1.3.1",
-    "progress_logging": true,
+    "config_version": "1.3.2",
+    "progress_logging": false,
 
     "accounts": [
         ["username1", "password1"],
@@ -15,7 +15,7 @@
     "enable_account_selection": false,
     "enable_steam": false,
 
-    "enable_window_positioning": true,
+    "enable_window_positioning": false,
     "window_positions": [
         [0, 0],
         [1920, 0],
@@ -26,14 +26,14 @@
     "window_title": "Wizard101",
     "school": "storm",
     "spell_priority": {
-        "sun": ["epic", "colossal", "gargantuan", "monstrous"],
-        "star": ["frenzy", "berserk", "furnace"],
+        "sun": ["epic"],
+        "star": ["frenzy", "furnace", "mass_storm_trap"],
         "storm": ["bunyips_rage", "squall_wyvern", "tempest", "storm_lord"],
         "ice": ["blizzard", "frost_giant", "reindeer_knight"],
         "fire": ["phantasmania", "meteor_strike", "fire_dragon"],
         "life": ["zand_the_bandit", "ratatoskrs_spin", "forest_lord"],
-        "death": ["call_of_khrulhu", "snack_attack", "wobbegong_frenzy", "ship_of_fools", "scarecrow", "deer_knight"],
-        "myth": ["mystic_colossus", "tatzlewurm_terror", "drop_bear_fury", "humongofrog", "orthrus"],
+        "death": ["wobbegong_frenzy", "ship_of_fools", "scarecrow", "deer_knight"],
+        "myth": ["drop_bear_fury", "humongofrog", "orthrus"],
         "balance": ["sandstorm", "power_nova"]
     }
 }

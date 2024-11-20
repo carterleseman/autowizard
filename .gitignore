@@ -4,6 +4,8 @@
 *.spec
 *.txt
 
+!requirements.txt
+
 # Virtual environment
 /venv/
 
